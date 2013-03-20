@@ -178,6 +178,7 @@ bool QAMQP::Network::isSsl() const
 	{
 		return QString(socket_->metaObject()->className()).compare( "QSslSocket", Qt::CaseInsensitive) == 0;	
 	}
+	return false;
 }
 
 void QAMQP::Network::setSsl( bool value )
