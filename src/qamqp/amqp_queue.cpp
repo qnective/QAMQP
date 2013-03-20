@@ -537,7 +537,7 @@ void QueuePrivate::_q_content( const QAMQP::Frame::Content & frame )
 		qErrnoWarning("Received content-header without method frame before");
 		return;
 	}
-	MessagePtr &message = messages_.head();
+	MessagePtr &message = messages_.last();
 	message->leftSize = frame.bodySize();
 	QHash<int, QVariant>::ConstIterator i;
 	for (i = frame.properties_.begin(); i != frame.properties_.end(); ++i)
@@ -556,7 +556,7 @@ void QueuePrivate::_q_body( int channeNumber, const QByteArray & body )
 		qErrnoWarning("Received content-body without method frame before");
 		return;
 	}
-	MessagePtr &message = messages_.head();	
+	MessagePtr &message = messages_.last();
 	message->payload.append(body);
 	message->leftSize -= body.size();
 	
