@@ -57,7 +57,7 @@ void Queue::onOpen()
 		QMap<QString, QString>::iterator i;
 		for(i = d->delayedBindings.begin(); i!= d->delayedBindings.end(); ++i )
 		{
-			d->bind(i.value(), i.key());
+			d->bind(i.key(), i.value());
 		}
 		d->delayedBindings.clear();
 	}
