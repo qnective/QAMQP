@@ -711,6 +711,6 @@ qint32 QAMQP::Frame::ContentBody::size() const
 
 QAMQP::Frame::Heartbeat::Heartbeat() : Base(ftHeartbeat) {}
 
-void QAMQP::Frame::Heartbeat::readPayload(QDataStream & stream) {}
-void QAMQP::Frame::Heartbeat::writePayload(QDataStream & stream) const {}
+void QAMQP::Frame::Heartbeat::readPayload(QDataStream & ) {}
+void QAMQP::Frame::Heartbeat::writePayload(QDataStream & ) const {}
 
