@@ -58,7 +58,7 @@ namespace QAMQP
 		bool noAck;
 		QString consumerTag;
 
-		QMap<QString, QString> delayedBindings;
+		QQueue<QPair<QString, QString> > delayedBindings;
 		QQueue<QAMQP::MessagePtr> messages_;
 
 		bool recievingMessage;

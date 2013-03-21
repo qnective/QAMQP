@@ -54,10 +54,10 @@ void Queue::onOpen()
 	}
 	if(!d->delayedBindings.isEmpty())
 	{
-		QMap<QString, QString>::iterator i;
-		for(i = d->delayedBindings.begin(); i!= d->delayedBindings.end(); ++i )
+		typedef QPair<QString, QString> BindingPair;
+		foreach(BindingPair binding, d->delayedBindings)
 		{
-			d->bind(i.key(), i.value());
+			d->bind(binding.first, binding.second);
 		}
 		d->delayedBindings.clear();
 	}
@@ -374,7 +374,7 @@ void QueuePrivate::bind( const QString & exchangeName, const QString & key )
 {
 	if(!opened)
 	{
-		delayedBindings[exchangeName] = key;
+		delayedBindings.append(QPair<QString,QString>(exchangeName, key));
 		return;
 	}
 
