@@ -18,6 +18,8 @@ namespace QAMQP
 		Q_OBJECT
 		Q_DISABLE_COPY(Network)
 	public:
+		typedef qint16 Channel;
+
 		Network(QObject * parent = 0);
 		~Network();
 		
@@ -34,6 +36,11 @@ namespace QAMQP
 
 		QAbstractSocket::SocketState state() const;
 
+		void setMethodHandlerConnection(Frame::MethodHandler* pMethodHandlerConnection);
+		void addMethodHandlerForChannel(Channel channel, Frame::MethodHandler* pHandler);
+		void addContentHandlerForChannel(Channel channel, Frame::ContentHandler* pHandler);
+		void addContentBodyHandlerForChannel(Channel channel, Frame::ContentBodyHandler* pHandler);
+
 	public slots:
 		void connectTo(const QString & host = QString(), quint32 port = 0);
 		void error( QAbstractSocket::SocketError socketError );
@@ -41,9 +48,6 @@ namespace QAMQP
 	signals:		
 		void connected();
 		void disconnected();
-		void method(const QAMQP::Frame::Method & method);
-		void content(const QAMQP::Frame::Content & content);
-		void body(int channeNumber, const QByteArray & body);
 
 	private slots:		
 		void readyRead();
@@ -64,8 +68,13 @@ namespace QAMQP
 		qint8 lastType_;
 		bool autoReconnect_;
 		int timeOut_;
-
 		bool connect_;
+
+		Frame::MethodHandler* m_pMethodHandlerConnection;
+
+		QHash<Channel, QList<Frame::MethodHandler*> > m_methodHandlersByChannel;
+		QHash<Channel, QList<Frame::ContentHandler*> > m_contentHandlerByChannel;
+		QHash<Channel, QList<Frame::ContentBodyHandler*> > m_bodyHandlersByChannel;
 	};
 }
 #endif // amqp_network_h__

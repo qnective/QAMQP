@@ -135,19 +135,35 @@ void QAMQP::Network::readyRead()
 			case QAMQP::Frame::ftMethod:
 				{
 					QAMQP::Frame::Method frame(streamB);
-					emit method(frame);
+					if(frame.methodClass() == QAMQP::Frame::fcConnection)
+					{
+						m_pMethodHandlerConnection->_q_method(frame);
+					}
+					else
+					{
+						foreach(Frame::MethodHandler* pMethodHandler, m_methodHandlersByChannel[frame.channel()])
+						{
+							pMethodHandler->_q_method(frame);
+						}
+					}
 				}
 				break;
 			case QAMQP::Frame::ftHeader:
 				{
 					QAMQP::Frame::Content frame(streamB);
-					emit content(frame);
+					foreach(Frame::ContentHandler* pMethodHandler, m_contentHandlerByChannel[frame.channel()])
+					{
+						pMethodHandler->_q_content(frame);
+					}
 				}
 				break;
 			case QAMQP::Frame::ftBody:
 				{
 					QAMQP::Frame::ContentBody frame(streamB);
-					emit body(frame.channel(), frame.body());
+					foreach(Frame::ContentBodyHandler* pMethodHandler, m_bodyHandlersByChannel[frame.channel()])
+					{
+						pMethodHandler->_q_body(frame);
+					}
 				}
 				break;
 			case QAMQP::Frame::ftHeartbeat:
@@ -254,4 +270,24 @@ QAbstractSocket::SocketState QAMQP::Network::state() const
 		return QAbstractSocket::UnconnectedState;
 	}
 	
+}
+
+void QAMQP::Network::setMethodHandlerConnection(Frame::MethodHandler* pMethodHandlerConnection)
+{
+	m_pMethodHandlerConnection = pMethodHandlerConnection;
+}
+
+void QAMQP::Network::addMethodHandlerForChannel(Channel channel, Frame::MethodHandler* pHandler)
+{
+	m_methodHandlersByChannel[channel].append(pHandler);
+}
+
+void QAMQP::Network::addContentHandlerForChannel(Channel channel, Frame::ContentHandler* pHandler)
+{
+	m_contentHandlerByChannel[channel].append(pHandler);
+}
+
+void QAMQP::Network::addContentBodyHandlerForChannel(Channel channel, Frame::ContentBodyHandler* pHandler)
+{
+	m_bodyHandlersByChannel[channel].append(pHandler);
 }

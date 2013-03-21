@@ -129,6 +129,15 @@ void Queue::unbind( Exchange * exchange, const QString & key )
 		pd_func()->unbind(exchange->name(), key);
 }
 
+void Queue::_q_content(const Content &frame)
+{
+	pd_func()->_q_content(frame);
+}
+
+void Queue::_q_body(const ContentBody &frame)
+{
+	pd_func()->_q_body(frame);
+}
 
 QAMQP::MessagePtr Queue::getMessage()
 {
@@ -530,6 +539,7 @@ void QueuePrivate::deliver( const QAMQP::Frame::Method & frame )
 
 void QueuePrivate::_q_content( const QAMQP::Frame::Content & frame )
 {
+	Q_ASSERT(frame.channel() == number);
 	if(frame.channel() != number)
 		return;
 	if(messages_.isEmpty())
@@ -546,9 +556,10 @@ void QueuePrivate::_q_content( const QAMQP::Frame::Content & frame )
 	}
 }
 
-void QueuePrivate::_q_body( int channeNumber, const QByteArray & body )
+void QueuePrivate::_q_body(const QAMQP::Frame::ContentBody & frame)
 {
-	if(channeNumber!= number)
+	Q_ASSERT(frame.channel() == number);
+	if(frame.channel() != number)
 		return;
 
 	if(messages_.isEmpty())
@@ -557,11 +568,11 @@ void QueuePrivate::_q_body( int channeNumber, const QByteArray & body )
 		return;
 	}
 	MessagePtr &message = messages_.last();
-	message->payload.append(body);
-	message->leftSize -= body.size();
+	message->payload.append(frame.body());
+	message->leftSize -= frame.body().size();
 	
 	if(message->leftSize == 0 && messages_.size() == 1)
 	{
-		QMetaObject::invokeMethod(pq_func(), "messageReceived");
+		emit pq_func()->messageReceived(pq_func());
 	}
 }

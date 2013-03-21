@@ -379,6 +379,24 @@ namespace QAMQP
 			void writePayload(QDataStream & stream) const;
 			void readPayload(QDataStream & stream);
 		};
+
+		class MethodHandler
+		{
+		public:
+			virtual void _q_method(const QAMQP::Frame::Method & frame) = 0;
+		};
+
+		class ContentHandler
+		{
+		public:
+			virtual void _q_content(const QAMQP::Frame::Content & frame) = 0;
+		};
+
+		class ContentBodyHandler
+		{
+		public:
+			virtual void _q_body(const QAMQP::Frame::ContentBody & frame) = 0;
+		};
 	}
 }
 

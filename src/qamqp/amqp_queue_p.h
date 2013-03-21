@@ -64,7 +64,7 @@ namespace QAMQP
 		bool recievingMessage;
 
 		void _q_content(const QAMQP::Frame::Content & frame);
-		void _q_body(int channeNumber, const QByteArray & body);
+		void _q_body(const QAMQP::Frame::ContentBody & frame);
 	};	
 }
 #endif // amqp_queue_p_h__
