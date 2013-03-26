@@ -60,12 +60,9 @@ namespace QAMQP
 	private:
 		void initSocket(bool ssl = false);
 		QPointer<QTcpSocket> socket_;
-		QPointer<QBuffer> buffer_;
+        QByteArray buffer_;
 		QString lastHost_;
 		int lastPort_;
-		int offsetBuf;
-		int leftSize;
-		qint8 lastType_;
 		bool autoReconnect_;
 		int timeOut_;
 		bool connect_;
