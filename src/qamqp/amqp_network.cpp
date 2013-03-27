@@ -84,11 +84,7 @@ void QAMQP::Network::error( QAbstractSocket::SocketError socketError )
 			break;
 	}
 
-	if( autoReconnect_ && connect_ )
-	{
-		QTimer::singleShot(timeOut_, this, SLOT(connectTo()));
-	}
-
+	reconnectIfEnabled();
 }
 
 void QAMQP::Network::readyRead()
@@ -108,7 +104,9 @@ void QAMQP::Network::readyRead()
 			const quint8 magic = *(quint8*)&bufferData[Frame::HEADER_SIZE+payloadSize];
 			if(magic != QAMQP::Frame::FRAME_END)
 			{
-				qWarning() << "Wrong end frame";
+				qWarning() << "Fatal protocol error: Wrong end frame. Aborting.";
+				abortSocket();
+				return;
 			}
 
 			QDataStream streamB(&buffer_, QIODevice::ReadOnly);
@@ -154,7 +152,9 @@ void QAMQP::Network::readyRead()
 				}
 				break;
 			default:
-				qWarning() << "AMQP: Unknown frame type: " << type;
+				qWarning() << "Fatal protocol error: Unknown frame type: " << type << ". Aborting.";
+				abortSocket();
+				return;
 			}
 		}
 		else
@@ -219,6 +219,19 @@ void QAMQP::Network::initSocket( bool ssl /*= false*/ )
 	}
 }
 
+void QAMQP::Network::abortSocket()
+{
+	socket_->abort();
+	reconnectIfEnabled();
+}
+
+void QAMQP::Network::reconnectIfEnabled()
+{
+	if( autoReconnect_ && connect_ )
+	{
+		QTimer::singleShot(timeOut_, this, SLOT(connectTo()));
+	}
+}
 
 void QAMQP::Network::sslErrors( )
 {
