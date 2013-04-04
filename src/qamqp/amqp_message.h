@@ -1,3 +1,6 @@
+#ifndef qamqp_amqp_message_h__
+#define qamqp_amqp_message_h__
+
 #include "amqp_frame.h"
 #include <QByteArray>
 #include <QHash>
@@ -31,3 +34,5 @@ namespace QAMQP
 
 	typedef QSharedPointer<QAMQP::Message> MessagePtr;
 }
+
+#endif // qamqp_amqp_message_h__
