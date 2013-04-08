@@ -519,6 +519,7 @@ void QueuePrivate::deliver( const QAMQP::Frame::Method & frame )
 	QString consumer_ = readField('s',in).toString();
 	if(consumer_ != consumerTag)
 	{
+		qWarning("Received unknown consumer tag.");
 		return;
 	}
 
