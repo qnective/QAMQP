@@ -401,7 +401,7 @@ void QueuePrivate::unbind( const QString & exchangeName, const QString & key )
 		return;
 	}
 
-	QAMQP::Frame::Method frame(QAMQP::Frame::fcQueue, miBind);
+	QAMQP::Frame::Method frame(QAMQP::Frame::fcQueue, miUnbind);
 	frame.setChannel(number);
 	QByteArray arguments_;
 	QDataStream out(&arguments_, QIODevice::WriteOnly);
